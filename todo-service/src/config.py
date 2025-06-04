@@ -1,25 +1,36 @@
-import os
 from dotenv import load_dotenv
-from pathlib import Path
+import os
 
-# Détecter l'environnement actif
-ENV = os.getenv("ENV", "development").lower()
+# Charger les variables d'environnement depuis le fichier `.env.<ENV>`
+env_name = os.getenv("ENV", "development")
+dotenv_path = f"/app/config/.env.{env_name}"
 
-# Charger le bon fichier .env depuis le dossier config/
-env_path = Path(__file__).resolve().parents[2] / "config" / f".env.{ENV}"
-load_dotenv(dotenv_path=env_path)
+if not os.path.exists(dotenv_path):
+    raise FileNotFoundError(f"Fichier .env non trouvé : {dotenv_path}")
+
+load_dotenv(dotenv_path)
+
 
 class Config:
-    ENV = ENV
+    ENV = env_name
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", 5000))
     VERSION = os.getenv("VERSION", "1.0.0")
 
-    if ENV in ["production", "staging"]:
-        DB_URI = (
-            f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}"
-            f"@{os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}/{os.getenv('MYSQL_DB')}"
-        )
+
+# 🔧 Calcul de la DB_URI après la classe, une fois Config.ENV défini
+def get_db_uri():
+    if Config.ENV == "production":
+        user = os.getenv("MYSQL_USER")
+        password = os.getenv("MYSQL_PASSWORD")
+        host = os.getenv("MYSQL_HOST")
+        port = os.getenv("MYSQL_PORT")
+        db = os.getenv("MYSQL_DB")
+        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}"
     else:
-        DB_URI = os.getenv("SQLITE_URI", "sqlite:///data.db")
+        return os.getenv("SQLITE_URI")
+
+
+# Injection dynamique de DB_URI dans la classe
+Config.DB_URI = get_db_uri()

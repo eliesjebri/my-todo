@@ -8,12 +8,13 @@ services:
         BUILD_ENV: development
     container_name: todo-dev
     env_file:
-      - ./config/.env.dev
+      - ./config/.env.development
     ports:
       - "5000:5000"
     volumes:
-      - ./todo-service/src:/app/src
-      - ./todo-service/data/todo.db:/etc/todo.db   # ✅ chemin corrigé
+      - ./todo-service/src:/app/src  # Code source
+      - ./todo-service/data/todo.db:/etc/todo.db  # Fichier SQLite persistant
+      - ./config:/app/config  # Dossier contenant .env.*
     restart: unless-stopped
     environment:
       - FLASK_DEBUG=1
