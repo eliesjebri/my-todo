@@ -1,0 +1,19 @@
+services:
+  todo-service:
+    build:
+      context: ./todo-service
+      dockerfile: Dockerfile
+      target: dev
+      args:
+        BUILD_ENV: development
+    container_name: todo-dev
+    env_file:
+      - ./config/.env.dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./todo-service/src:/app/src
+      - ./todo-service/data/todo.db:/etc/todo.db   # ✅ chemin corrigé
+    restart: unless-stopped
+    environment:
+      - FLASK_DEBUG=1
