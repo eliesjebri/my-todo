@@ -1,0 +1,46 @@
+# === Node (React frontend) ===
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env*
+!frontend/.env.dev
+!frontend/.env.test
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+todo-service/.env
+todo-service/data.db
+venv/
+env/
+.venv/
+
+# === SQLite database ===
+/etc/todo.db
+data/todo.db
+
+# === Docker ===
+*.log
+*.pid
+*.pid.lock
+*.tar
+.dockerignore
+
+# === Environnements config (12-Factor) ===
+config/.env.*
+!config/.env.dev
+!config/.env.test
+!config/.env.prod.example
+!config/.env.staging.example
+
+# === IDE / éditeurs ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === OS ===
+.DS_Store
+Thumbs.db
