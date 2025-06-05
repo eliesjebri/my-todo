@@ -27,6 +27,14 @@ def list_todos():
     tasks = get_all_tasks()
     return jsonify(tasks), 200
 
+# 🔹 GET /todos/:id — récupérer une tâche par ID
+@todos_bp.route("/todos/<int:task_id>", methods=["GET"])
+def get_todo(task_id):
+    task = get_task_by_id(task_id)
+    if not task:
+        return jsonify({"error": "Tâche non trouvée."}), 404
+    return jsonify(task), 200
+
 # 🔹 POST /todos — créer une tâche
 @todos_bp.route("/todos", methods=["POST"])
 def add_todo():
