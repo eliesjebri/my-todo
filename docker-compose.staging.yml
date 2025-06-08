@@ -27,8 +27,8 @@ services:
     image: mysql:8.0
     container_name: mysql-todo-staging
     restart: unless-stopped
-    env_file:                             ✅ AJOUTÉ
-      - ./config/.env.staging             ✅ POUR CHARGER LES VARS MYSQL_*
+    env_file:
+      - ./config/.env.staging
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ${MYSQL_DB}
