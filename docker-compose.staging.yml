@@ -22,12 +22,19 @@ services:
       - FLASK_DEBUG=0
     command: >
       sh -c "
-      until nc -z mysql 3306;
-      do echo 'En attente de MySQL...'; sleep 2;
-      done;
-      echo 'MySQL prêt !';
-      gunicorn --bind 0.0.0.0:5000 'src.app:create_app'
-      "
+      python -c '
+    import time, socket
+    while True:
+        try:
+            s = socket.create_connection((\"mysql\", 3306), timeout=2)
+            print(\"✅ MySQL prêt !\")
+            break
+        except Exception:
+            print(\"⏳ En attente de MySQL...\")
+            time.sleep(2)
+      ';
+  gunicorn --bind 0.0.0.0:5000 'src.app:create_app'
+  "
 
   mysql:
     image: mysql:8.0
