@@ -23,19 +23,10 @@ services:
       - FLASK_ENV=staging
       - FLASK_DEBUG=0
     command: >
-      sh -c 'echo "⏳ Attente de la disponibilité de MySQL...";
-      python -c "import time, socket
-s = socket.socket()
-while True:
-    try:
-        s.connect((\"mysql\", 3306))
-        print(\"✅ MySQL est prêt !\")
-        break
-    except Exception:
-        print(\"🕒 En attente de MySQL...\")
-        time.sleep(2)";
-      echo "🚀 Démarrage de Gunicorn...";
-      gunicorn --bind 0.0.0.0:5000 src.app:create_app'
+      sh -c "echo '⏳ Attente de la disponibilité de MySQL...';
+      python /app/src/wait_for_mysql.py;
+      echo '🚀 Démarrage de Gunicorn...';
+      gunicorn --bind 0.0.0.0:5000 src.app:create_app"
 
   mysql:
     image: mysql:8.0
