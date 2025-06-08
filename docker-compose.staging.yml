@@ -3,7 +3,7 @@ services:
     build:
       context: ./todo-service
       dockerfile: Dockerfile
-      target: prod
+      target: prod  # Utilise bien le stage "prod"
       args:
         BUILD_ENV: staging
     container_name: todo-staging
@@ -25,17 +25,15 @@ services:
     image: mysql:8.0
     container_name: mysql-todo-staging
     restart: unless-stopped
-    env_file:
-      - ./config/.env.staging
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${MYSQL_DB}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
       - mysql_staging_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root
 
 volumes:
   mysql_staging_data:
