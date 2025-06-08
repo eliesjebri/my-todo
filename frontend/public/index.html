@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Affichage en bas de page de la version du frontend -->
+    <footer style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 0.8rem; color: gray;">
+      Frontend v<span id="app-version"></span>
+    </footer>
+
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Injecter dynamiquement la version depuis import.meta.env
+      window.addEventListener('DOMContentLoaded', () => {
+        const version = import.meta.env.VITE_FRONT_VERSION || '0.0.0';
+        document.getElementById('app-version').textContent = version;
+      });
+    </script>
+  </body>
+</html>
