@@ -28,7 +28,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 CMD ["flask", "run"]
 
 # === STAGE PROD / STAGING ===
-FROM base AS prod
+FROM base AS prod 
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl --fail http://localhost:5000/status || exit 1

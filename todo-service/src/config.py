@@ -19,9 +19,8 @@ class Config:
     VERSION = os.getenv("VERSION", "1.0.0")
 
 
-# 🔧 Calcul de la DB_URI après la classe, une fois Config.ENV défini
 def get_db_uri():
-    if Config.ENV == "production":
+    if Config.ENV in ["production", "staging"]:
         user = os.getenv("MYSQL_USER")
         password = os.getenv("MYSQL_PASSWORD")
         host = os.getenv("MYSQL_HOST")
@@ -32,5 +31,7 @@ def get_db_uri():
         return os.getenv("SQLITE_URI")
 
 
-# Injection dynamique de DB_URI dans la classe
-Config.DB_URI = get_db_uri()
+db_uri = get_db_uri()
+if not db_uri:
+    raise ValueError("DB_URI est vide. Vérifie les variables d'environnement.")
+Config.DB_URI = db_uri

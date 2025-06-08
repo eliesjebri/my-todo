@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  todo-service:
+    build:
+      context: ./todo-service
+      dockerfile: Dockerfile
+      target: prod
+      args:
+        BUILD_ENV: staging
+    container_name: todo-staging
+    env_file:
+      - ./config/.env.staging
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./todo-service/src:/app/src
+      - ./config:/app/config
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      - FLASK_ENV=staging
+      - FLASK_DEBUG=0
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-todo-staging
+    restart: unless-stopped
+    env_file:                             ✅ AJOUTÉ
+      - ./config/.env.staging             ✅ POUR CHARGER LES VARS MYSQL_*
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_staging_data:/var/lib/mysql
+
+volumes:
+  mysql_staging_data:
