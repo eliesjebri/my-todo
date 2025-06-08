@@ -1,9 +1,7 @@
 import unittest
-import os
-from flask import Flask
 from src.app import create_app
 from src.persistence.db import db
-from src.config import Config  # ✅ Centralisation de la config
+from src.config import Config
 
 @unittest.skipUnless(Config.ENV == "staging", "Test MySQL exécuté uniquement en staging")
 class RoutesMySQLTestCase(unittest.TestCase):
@@ -11,15 +9,9 @@ class RoutesMySQLTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.app.config["TESTING"] = True
-
-        # ✅ Connexion à la DB via Config
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = Config.DB_URI
-        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
         self.client = self.app.test_client()
 
         with self.app.app_context():
-            db.init_app(self.app)
             db.drop_all()
             db.create_all()
 

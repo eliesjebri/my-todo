@@ -16,6 +16,7 @@ services:
     volumes:
       - ./todo-service/src:/app/src
       - ./config:/app/config
+      - ./todo-service/tests:/app/tests
     restart: unless-stopped
     depends_on:
       - mysql
