@@ -10,31 +10,38 @@ services:
     env_file:
       - ./config/.env.staging
     ports:
-      - "5001:5000"
+      - "5001:5000"  # Port local pour éviter les conflits
     volumes:
-      - ./todo-service/src:/app/src
-      - ./config:/app/config
-      - ./todo-service/tests:/app/tests
+      - ./todo-service/src:/app/src         # Code source
+      - ./config:/app/config                # Accès aux .env.*
     restart: unless-stopped
     depends_on:
       - mysql
     environment:
       - FLASK_ENV=staging
       - FLASK_DEBUG=0
+    command: >
+      sh -c "
+      until nc -z mysql 3306;
+      do echo 'En attente de MySQL...'; sleep 2;
+      done;
+      echo 'MySQL prêt !';
+      gunicorn --bind 0.0.0.0:5000 src.app:create_app()
+      "
 
   mysql:
     image: mysql:8.0
     container_name: mysql-todo-staging
     restart: unless-stopped
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_staging_data:/var/lib/mysql
     environment:
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ${MYSQL_DB}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"  # Port local différent
+    volumes:
+      - mysql_staging_data:/var/lib/mysql
 
 volumes:
   mysql_staging_data:
