@@ -3,17 +3,17 @@ services:
     build:
       context: ./todo-service
       dockerfile: Dockerfile
-      target: prod  # Utilise bien le stage "prod"
+      target: prod
       args:
         BUILD_ENV: staging
     container_name: todo-staging
     env_file:
       - ./config/.env.staging
     ports:
-      - "5001:5000"  # Port local pour éviter les conflits
+      - "5001:5000"
     volumes:
-      - ./todo-service/src:/app/src         # Code source
-      - ./config:/app/config                # Accès aux .env.*
+      - ./todo-service/src:/app/src
+      - ./config:/app/config
     restart: unless-stopped
     depends_on:
       - mysql
@@ -22,19 +22,21 @@ services:
       - FLASK_DEBUG=0
     command: >
       sh -c "
+      echo '⏳ Attente de la disponibilité de MySQL...';
       python -c '
-    import time, socket
-    while True:
-        try:
-            s = socket.create_connection((\"mysql\", 3306), timeout=2)
-            print(\"✅ MySQL prêt !\")
-            break
-        except Exception:
-            print(\"⏳ En attente de MySQL...\")
-            time.sleep(2)
+import time, socket
+while True:
+    try:
+        s = socket.create_connection((\"mysql\", 3306), timeout=2)
+        print(\"✅ MySQL est prêt !\")
+        break
+    except Exception:
+        print(\"🕒 En attente de MySQL...\")
+        time.sleep(2)
       ';
-  gunicorn --bind 0.0.0.0:5000 'src.app:create_app'
-  "
+      echo '🚀 Démarrage de Gunicorn...';
+      gunicorn --bind 0.0.0.0:5000 'src.app:create_app'
+      "
 
   mysql:
     image: mysql:8.0
@@ -46,7 +48,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3307:3306"  # Port local différent
+      - "3307:3306"
     volumes:
       - mysql_staging_data:/var/lib/mysql
 
