@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend-todo
+    ports:
+      - "5173:80"
+    env_file:
+      - ./config/.env.frontend
+    volumes:
+      - ./frontend/nginx.template.conf:/etc/nginx/templates/default.conf.template:ro
+    restart: unless-stopped

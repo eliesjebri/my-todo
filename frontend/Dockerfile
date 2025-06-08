@@ -1,28 +1,37 @@
-# Étape 1 : Build avec Node.js
-FROM node:20-alpine AS build
+# ============================
+# Étape 1 : Build Vite avec Node.js
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend/package.json ./
+RUN npm install --package-lock-only
 RUN npm install
 
 COPY frontend/ .
+
+# 👉 Corriger le problème d’entrée
+COPY frontend/public/index.html ./index.html
+
+COPY config/.env.frontend .env
 RUN npm run build
 
-# Étape 2 : Serveur NGINX
-FROM nginx:1.25-alpine AS production
 
-# Nettoyage
+
+# ============================
+# Étape 2 : Serveur NGINX pour production
+# ============================
+FROM nginx:1.25-alpine AS app
+
+# Nettoyage des fichiers par défaut
 RUN rm -rf /usr/share/nginx/html/*
 
-# Fichiers du build
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copier le build Vite
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Config NGINX personnalisée (pas en dur non plus)
+# Configuration NGINX dynamique
 COPY frontend/nginx.template.conf /etc/nginx/templates/default.conf.template
 
-# Dossier utilisé par nginx (peut rester tel quel)
-ENV NGINX_PORT=80
-ENV NGINX_HOST=0.0.0.0
+EXPOSE 80
 
 CMD ["sh", "-c", "envsubst < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
