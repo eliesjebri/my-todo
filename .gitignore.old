@@ -30,7 +30,7 @@ data/todo.db
 
 # === Environnements config (12-Factor) ===
 config/.env.*
-!config/.env.dev
+!config/.env.development
 !config/.env.test
 !config/.env.prod.example
 !config/.env.staging.example
