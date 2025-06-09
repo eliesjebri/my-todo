@@ -34,4 +34,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl --fail http://localhost:5000/status || exit 1
 
 # On utilise Gunicorn en prod/staging
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.app:create_app()"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.app:create_app()"]
+CMD gunicorn --bind 0.0.0.0:5000 "src.app:create_app()"

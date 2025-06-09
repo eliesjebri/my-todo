@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend-todo
+    ports:
+      - "5173:80"
+    depends_on:
+      - todo-staging
+    env_file:
+      - ./config/.env.frontend
+    networks:
+      - mynet
+
+  todo-staging:
+    build:
+      context: ./todo-service
+    container_name: todo-staging
+    ports:
+      - "5001:5000"
+    networks:
+      - mynet
+
+networks:
+  mynet:

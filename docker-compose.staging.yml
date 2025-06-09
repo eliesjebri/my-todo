@@ -28,6 +28,8 @@ services:
       python /app/src/wait_for_mysql.py;
       echo '🚀 Démarrage de Gunicorn...';
       gunicorn --bind 0.0.0.0:5000 src.app:create_app"
+    networks:
+      - mynet
 
   mysql:
     image: mysql:8.0
@@ -42,6 +44,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql_staging_data:/var/lib/mysql
+    networks:
+      - mynet
 
 volumes:
   mysql_staging_data:
+
+networks:
+  mynet:

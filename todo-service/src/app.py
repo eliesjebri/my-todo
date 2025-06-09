@@ -1,50 +1,28 @@
 from flask import Flask
+from flask_cors import CORS
 from src.config import Config
 from src.routes.todos import todos_bp
 from src.persistence.db import init_db
 
-def create_app():
+# ✅ Modification ici : accepte un paramètre (même si inutilisé)
+def create_app(config=None):
     app = Flask(__name__)
 
-    # Configuration centralisée
-    app.config.from_object(Config)
+    # ✅ CORS autorisé pour tous les chemins et toutes les origines (dev uniquement)
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
-    # Configuration SQLAlchemy explicite
+    # ✅ Chargement de la configuration
+    app.config.from_object(Config)
     app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Init DB et routes
+    # ✅ Initialisation de la base de données et enregistrement des routes
     init_db(app)
     app.register_blueprint(todos_bp)
 
     return app
 
+# ✅ Point d’entrée pour le mode standalone (développement uniquement)
 if __name__ == "__main__":
     app = create_app()
     app.run(host=Config.HOST, port=Config.PORT)
-
-#from flask import Flask
-#from src.config import Config
-#from src.routes.todos import todos_bp
-#from src.persistence.db import init_db
-
-#def create_app():
-#    app = Flask(__name__)
-    
-    # Chargement de la configuration
-#    app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_URI
-#    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#    app.config['ENV'] = Config.ENV
-#    app.config['DEBUG'] = Config.DEBUG
-
-    # Initialisation de la base de données
-#    init_db(app)
-
-    # Enregistrement des blueprints
-#    app.register_blueprint(todos_bp)
-
-#    return app
-
-#if __name__ == "__main__":
-#    app = create_app()
-#    app.run(host=Config.HOST, port=Config.PORT)
